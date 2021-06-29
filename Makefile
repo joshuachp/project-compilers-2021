@@ -10,10 +10,10 @@ CXXFLAGS += -g -Wall -Wextra
 LDLIBS += -lfl
 
 LEX := flex
-#LFLAGS += -d
+LFLAGS += -d
 
 YACC := bison
-YFLAGS += -d -Wall
+YFLAGS += -d
 
 LEX_SRC = src/lex.l
 LEX_SRC_C = $(patsubst $(SRC)/%.l, $(C_DIR)/%.yy.c, $(LEX_SRC))

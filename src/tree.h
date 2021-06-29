@@ -18,6 +18,7 @@ typedef struct Node {
         int number;
         Operator op;
     };
+    // TODO: child
 } Node;
 
 #endif // SYNTAX_TREE
