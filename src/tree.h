@@ -2,8 +2,17 @@
 #define SYNTAX_TREE
 
 #include <stdbool.h>
+#include <stdint.h>
 
-typedef enum NodeType { INT, BOOL, MATH_OP, BOOL_OP, COND, ASSIGN } NodeType;
+typedef enum NodeType {
+    INT_NODE,
+    BOOL_NODE,
+    MATH_OP_NODE,
+    BOOL_OP_NODE,
+    COND_NODE,
+    ASSIGN_NODE,
+    ID_NODE
+} NodeType;
 
 typedef enum MathOperator {
     Sum,
@@ -23,7 +32,8 @@ typedef enum BoolOperator {
 } BoolOperator;
 
 typedef union {
-    int integer;
+    char *id;
+    int32_t integer;
     bool boolean;
     MathOperator math_op;
     BoolOperator bool_op;
@@ -42,21 +52,13 @@ typedef enum {
     Bool,
 } Type;
 
-typedef union {
-    int integer;
-    bool boolean;
-} Value;
-
-typedef struct Var {
-    Type type;
-    Value value;
-} Var;
-
 Node *newNode(NodeType type, NodeValue value, Node *left, Node *right);
 
 Node *newConditional(Node *condition, Node *left, Node *right);
 
-void newAssignment(char* id, Node* expr);
+Node *newAssignment(char *id, Node *expr);
+
+Node *newID(char *id);
 
 void printTree(Node *node);
 

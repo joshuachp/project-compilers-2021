@@ -28,14 +28,15 @@ FALSE "False"
 L_B "("
 R_B ")"
 
-NL [\n\r]
-
 IF if
 THEN then
 DO do
 ELSE else
 
-ID [A-Za-z_]+
+ID [A-Za-z][A-Za-z0-9]*
+ASSIGN "="
+
+NL [\n\r]
 
 %%
 
@@ -60,14 +61,15 @@ ID [A-Za-z_]+
 {L_B} { return L_B; }
 {R_B} { return R_B; }
 
-{NL} { return NL; }
-
 {IF}    { return IF; }
 {THEN}  { return THEN; }
 {DO}    { return DO; }
 {ELSE}  { return ELSE; }
 
 {ID} { yylval.id = yytext; return ID; }
+{ASSIGN} { return ASSIGN; }
+
+{NL} { return NL; }
 
 [ \t]               /* skip white-space */
 

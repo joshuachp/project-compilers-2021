@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.10)
 # Set the project name
 project(Compilers_project)
 
+set(CMAKE_C_STANDARD 11)
+
 option (FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." TRUE)
 if (${FORCE_COLORED_OUTPUT})
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -18,7 +20,8 @@ find_package(FLEX)
 
 BISON_TARGET(Parser src/parser/parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.c
     DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/parser.h)
-FLEX_TARGET(Lexer src/parser/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.c)
+FLEX_TARGET(Lexer src/parser/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.c
+    COMPILE_FLAGS -d)
 ADD_FLEX_BISON_DEPENDENCY(Lexer Parser)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} src)
@@ -26,6 +29,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} src)
 add_executable(calc
     src/main.c
     src/tree.c
+    src/hash.c
     ${BISON_Parser_OUTPUTS}
     ${FLEX_Lexer_OUTPUTS}
 )

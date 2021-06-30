@@ -2,6 +2,7 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include <stdbool.h>
+    #include <stdint.h>
     #include "tree.h"
 
     extern int yylex();
@@ -11,9 +12,11 @@
     int yywrap(void);
 %}
 
+%define parse.error verbose
+
 %union {
     char* id;
-    int integer;
+    int32_t integer;
     bool boolean;
     struct Node *node;
 }
@@ -47,64 +50,57 @@
 %token ELSE
 
 %token ID
+%token ASSIGN
 
 %type<id> ID
 %type<integer> NUMBER
 %type<boolean> TRUE FALSE
 
-%type<node> math_expr expr cond bool_expr
+%type<node> math_expr expr cond bool_expr var
 
 %left PLUS MIN
 %right MUL DIV
+%right ASSIGN
 
 %left LS GR LEQ GEQ EQ NEQ
 %right NOT
 
 %%
 
-//main: assignments lines
-//    | %empty
-//    ;
-
-// TODO: asignments
-//assignments: assignments asign
-             //| %empty
-             //;
-//asign: ID '=' expr {};
-
 lines: lines line
      | %empty
      ;
 
-line: expr NL  { printTree($1); puts(""); fflush(stdout); }
-    | cond NL  { printTree($1); puts(""); fflush(stdout); }
-    | assignments NL
+line: var NL    { printTree($1); puts(""); fflush(stdout); }
+    | expr NL   { printTree($1); puts(""); fflush(stdout); }
+    | cond NL   { printTree($1); puts(""); fflush(stdout); }
+    | NL
     ;
 
-assignments: ID '=' expr { newAssignment($1, $3); }
+var: ID ASSIGN expr { $$ = newAssignment($1, $3); }
 
-expr: math_expr { $$ = $1; }
-    | bool_expr { $$ = $1; }
+expr: math_expr     { $$ = $1; }
+    | bool_expr     { $$ = $1; }
+    | L_B expr R_B  { $$ = $2; }
+    | ID            { $$ = newID($1); }
     ;
 
-math_expr: expr PLUS expr       { $$ = newNode(MATH_OP, (NodeValue)Sum, $1, $3); }
-         | expr MIN expr        { $$ = newNode(MATH_OP, (NodeValue)Dif, $1, $3); }
-         | expr MUL expr        { $$ = newNode(MATH_OP, (NodeValue)Mul, $1, $3); }
-         | expr DIV expr        { $$ = newNode(MATH_OP, (NodeValue)Div, $1, $3); }
-         | L_B math_expr R_B    { $$ = $2; }
-         | NUMBER               { $$ = newNode(INT, (NodeValue)$1, NULL, NULL); }
+math_expr: expr PLUS expr       { $$ = newNode(MATH_OP_NODE, (NodeValue)Sum, $1, $3); }
+         | expr MIN expr        { $$ = newNode(MATH_OP_NODE, (NodeValue)Dif, $1, $3); }
+         | expr MUL expr        { $$ = newNode(MATH_OP_NODE, (NodeValue)Mul, $1, $3); }
+         | expr DIV expr        { $$ = newNode(MATH_OP_NODE, (NodeValue)Div, $1, $3); }
+         | NUMBER               { $$ = newNode(INT_NODE, (NodeValue)$1, NULL, NULL); }
          ;
 
-bool_expr: expr LS expr         { $$ = newNode(BOOL_OP, (NodeValue)Ls, $1, $3); }
-         | expr GR expr         { $$ = newNode(BOOL_OP, (NodeValue)Gr, $1, $3); }
-         | expr LEQ expr        { $$ = newNode(BOOL_OP, (NodeValue)Leq, $1, $3); }
-         | expr GEQ expr        { $$ = newNode(BOOL_OP, (NodeValue)Geq, $1, $3); }
-         | expr EQ expr         { $$ = newNode(BOOL_OP, (NodeValue)Eq, $1, $3); }
-         | expr NEQ expr        { $$ = newNode(BOOL_OP, (NodeValue)Neq, $1, $3); }
-         | NOT expr             { $$ = newNode(BOOL_OP, (NodeValue)Not, $2, NULL); }
-         | L_B bool_expr R_B    { $$ = $2; }
-         | TRUE                 { $$ = newNode(BOOL, (NodeValue)$1, NULL, NULL); }
-         | FALSE                { $$ = newNode(BOOL, (NodeValue)$1, NULL, NULL); }
+bool_expr: expr LS expr         { $$ = newNode(BOOL_OP_NODE, (NodeValue)Ls, $1, $3); }
+         | expr GR expr         { $$ = newNode(BOOL_OP_NODE, (NodeValue)Gr, $1, $3); }
+         | expr LEQ expr        { $$ = newNode(BOOL_OP_NODE, (NodeValue)Leq, $1, $3); }
+         | expr GEQ expr        { $$ = newNode(BOOL_OP_NODE, (NodeValue)Geq, $1, $3); }
+         | expr EQ expr         { $$ = newNode(BOOL_OP_NODE, (NodeValue)Eq, $1, $3); }
+         | expr NEQ expr        { $$ = newNode(BOOL_OP_NODE, (NodeValue)Neq, $1, $3); }
+         | NOT expr             { $$ = newNode(BOOL_OP_NODE, (NodeValue)Not, $2, NULL); }
+         | TRUE                 { $$ = newNode(BOOL_NODE, (NodeValue)$1, NULL, NULL); }
+         | FALSE                { $$ = newNode(BOOL_NODE, (NodeValue)$1, NULL, NULL); }
          ;
 
 cond: IF expr THEN expr ELSE expr    { $$ = newConditional($2, $4, $6); }
