@@ -2,7 +2,7 @@
     #include <stdlib.h>
     #include <string.h>
     #include <stdbool.h>
-    #include "main.tab.h"
+    #include "parser.h"
 
     extern void yyerror(const char*);
 %}
@@ -30,6 +30,13 @@ R_B ")"
 
 NL [\n\r]
 
+IF if
+THEN then
+DO do
+ELSE else
+
+ID [A-Za-z_]+
+
 %%
 
 {NUMBER} { yylval.integer = atoi(yytext); return NUMBER; }
@@ -53,8 +60,14 @@ NL [\n\r]
 {L_B} { return L_B; }
 {R_B} { return R_B; }
 
-
 {NL} { return NL; }
+
+{IF}    { return IF; }
+{THEN}  { return THEN; }
+{DO}    { return DO; }
+{ELSE}  { return ELSE; }
+
+{ID} { yylval.id = yytext; return ID; }
 
 [ \t]               /* skip white-space */
 
