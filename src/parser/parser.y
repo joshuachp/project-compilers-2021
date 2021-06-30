@@ -60,7 +60,6 @@
 
 %left PLUS MIN
 %right MUL DIV
-%right ASSIGN
 
 %left LS GR LEQ GEQ EQ NEQ
 %right NOT
@@ -71,9 +70,9 @@ lines: lines line
      | %empty
      ;
 
-line: var NL    { printTree($1); puts(""); fflush(stdout); }
-    | expr NL   { printTree($1); puts(""); fflush(stdout); }
-    | cond NL   { printTree($1); puts(""); fflush(stdout); }
+line: var NL    { printTree($1); fflush(stdout); }
+    | expr NL   { printTree($1); fflush(stdout); }
+    | cond NL   { printTree($1); fflush(stdout); }
     | NL
     ;
 
@@ -82,7 +81,7 @@ var: ID ASSIGN expr { $$ = newAssignment($1, $3); }
 expr: math_expr     { $$ = $1; }
     | bool_expr     { $$ = $1; }
     | L_B expr R_B  { $$ = $2; }
-    | ID            { $$ = newID($1); }
+    | ID            { printf("ID: (%s)\n", $1); $$ = newID($1); }
     ;
 
 math_expr: expr PLUS expr       { $$ = newNode(MATH_OP_NODE, (NodeValue)Sum, $1, $3); }

@@ -66,7 +66,7 @@ NL [\n\r]
 {DO}    { return DO; }
 {ELSE}  { return ELSE; }
 
-{ID} { yylval.id = yytext; return ID; }
+{ID} { yylval.id = strdup(yytext); return ID; }
 {ASSIGN} { return ASSIGN; }
 
 {NL} { return NL; }

@@ -26,19 +26,17 @@ Node *newConditional(Node *condition, Node *left, Node *right) {
 Node *newAssignment(char *id, Node *expr) {
     Node *node = malloc(sizeof(Node));
     node->type = ASSIGN_NODE;
-    node->value.id = malloc(strlen(id) + 1);
-    strcpy(node->value.id, id);
+    node->value.id = id;
     node->right = expr;
     node->left = NULL;
     node->condition = NULL;
-   return node;
+    return node;
 }
 
 Node *newID(char *id) {
     Node *node = malloc(sizeof(Node));
     node->type = ID_NODE;
-    node->value.id = malloc(strlen(id) + 1);
-    strcpy(node->value.id, id);
+    node->value.id = id;
     node->left = NULL;
     node->right = NULL;
     node->condition = NULL;

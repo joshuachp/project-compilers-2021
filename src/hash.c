@@ -5,8 +5,7 @@
 Item *newItem(char *key, Value value, Item *next) {
     Item *item = malloc(sizeof(Item));
     // Own the string
-    item->key = malloc(strlen(key) + 1);
-    strcpy(item->key, key);
+    item->key = key;
     item->value = value;
     item->next = next;
     return item;
