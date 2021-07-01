@@ -5,20 +5,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-typedef union {
-    bool b;
-    int32_t i;
-} Value;
-
-typedef enum {
-    Bool,
-    Int,
-} Type;
-
 typedef struct Item {
     char *key;
-    Value value;
-    Type type;
+    int32_t value;
     struct Item *next;
 } Item;
 
@@ -27,10 +16,16 @@ typedef struct Bucket {
     Item *tail;
 } Bucket;
 
-Item *newItem(char *key, Value value, Item *next);
+Bucket *newBucket();
 
-Item *pushItem(char *key, Value value, Bucket *bucket);
+void freeBucket(Bucket *bucket);
 
-Item *searchItem(char *key, Bucket *bucket);
+void freeItem(Item *item);
+
+Item *newItem(char *key, int32_t value, Item *next);
+
+Item *setItem(char *key, int32_t value, Bucket *bucket);
+
+Item *getItem(char *key, Bucket *bucket);
 
 #endif // HASH_TABLE

@@ -6,7 +6,7 @@ BUILD_DIR ?= build
 all: setup build
 
 setup:
-	cmake -B ${BUILD_DIR} -S . -G ${BUILD_TOOL} -DCMAKE_BUILD_TYPE=Debug
+	cmake -B ${BUILD_DIR} -S . -G ${BUILD_TOOL} -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
 build:
 	cmake --build ${BUILD_DIR}

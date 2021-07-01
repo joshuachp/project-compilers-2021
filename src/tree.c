@@ -112,3 +112,66 @@ void printTree(Node *node) {
     printNode(node);
     printTree(node->right);
 }
+
+Program *newProgram() {
+    Program *program = malloc(sizeof(Program));
+    program->lines = calloc(PROGRAM_DEFAULT_CAPACITY, sizeof(Node));
+    program->capacity = PROGRAM_DEFAULT_CAPACITY;
+    program->length = 0;
+    return program;
+}
+
+void pushLineProgram(Program *program, Node *line) {
+    if (program->length + 1 > program->capacity) {
+        program->lines = realloc(program->lines, program->capacity * 2 * sizeof(Node));
+    }
+    program->lines[program->length] = line;
+    program->length += 1;
+}
+
+char *nodeOperationToString(Node *node) {
+    char *op;
+    if (node->type == MATH_OP_NODE) {
+        switch (node->value.math_op) {
+            case Sum:
+                op = strdup("+");
+                break;
+            case Dif:
+                op = strdup("-");
+                break;
+            case Mul:
+                op = strdup("*");
+                break;
+            case Div:
+                op = strdup("/");
+                break;
+        }
+    } else if (node->type == BOOL_OP_NODE) {
+        switch (node->value.bool_op) {
+            case Ls:
+                op = strdup("<");
+                break;
+            case Gr:
+                op = strdup(">");
+                break;
+            case Leq:
+                op = strdup("<=");
+                break;
+            case Geq:
+                op = strdup(">=");
+                break;
+            case Eq:
+                op = strdup("==");
+                break;
+            case Neq:
+                op = strdup("!=");
+                break;
+            case Not:
+                op = strdup("!");
+                break;
+        }
+    } else {
+        op = NULL;
+    }
+    return op;
+}

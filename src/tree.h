@@ -2,7 +2,9 @@
 #define SYNTAX_TREE
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 typedef enum NodeType {
     INT_NODE,
@@ -47,10 +49,13 @@ typedef struct Node {
     struct Node *condition;
 } Node;
 
-typedef enum {
-    Int,
-    Bool,
-} Type;
+#define PROGRAM_DEFAULT_CAPACITY 10
+
+typedef struct Program {
+    size_t capacity;
+    size_t length;
+    Node **lines;
+} Program;
 
 Node *newNode(NodeType type, NodeValue value, Node *left, Node *right);
 
@@ -64,6 +69,10 @@ void printTree(Node *node);
 
 void printNode(Node *node);
 
-void visit(Node *node);
+Program *newProgram();
+
+void pushLineProgram(Program *program, Node *line);
+
+char *nodeOperationToString(Node *node);
 
 #endif // SYNTAX_TREE

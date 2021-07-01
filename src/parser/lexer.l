@@ -3,8 +3,6 @@
     #include <string.h>
     #include <stdbool.h>
     #include "parser.h"
-
-    extern void yyerror(const char*);
 %}
 
 NUMBER [0-9]+
@@ -71,6 +69,6 @@ NL [\n\r]
 
 {NL} { return NL; }
 
-[ \t]               /* skip white-space */
+[ \t] /* skip white-space */
 
 %%

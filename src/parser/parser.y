@@ -7,12 +7,22 @@
 
     extern int yylex();
     extern int yyparse();
+    extern FILE *yyin;
 
-    void yyerror(const char*);
+
+    void yyerror(Program* program, const char*);
     int yywrap(void);
 %}
 
+%code requires {
+    #include <stdbool.h>
+    #include <stdint.h>
+    #include "tree.h"
+}
+
 %define parse.error verbose
+
+%parse-param {Program *program}
 
 %union {
     char* id;
@@ -56,7 +66,7 @@
 %type<integer> NUMBER
 %type<boolean> TRUE FALSE
 
-%type<node> math_expr expr cond bool_expr var
+%type<node> line math_expr expr cond bool_expr var
 
 %left PLUS MIN
 %right MUL DIV
@@ -66,14 +76,15 @@
 
 %%
 
-lines: lines line
+lines: lines line { pushLineProgram(program, $2); }
+     | lines NL
+     | NL
      | %empty
      ;
 
-line: var NL    { printTree($1); fflush(stdout); }
-    | expr NL   { printTree($1); fflush(stdout); }
-    | cond NL   { printTree($1); fflush(stdout); }
-    | NL
+line: var NL    { $$ = $1; }
+    | expr NL   { $$ = $1; }
+    | cond NL   { $$ = $1; }
     ;
 
 var: ID ASSIGN expr { $$ = newAssignment($1, $3); }
@@ -81,7 +92,7 @@ var: ID ASSIGN expr { $$ = newAssignment($1, $3); }
 expr: math_expr     { $$ = $1; }
     | bool_expr     { $$ = $1; }
     | L_B expr R_B  { $$ = $2; }
-    | ID            { printf("ID: (%s)\n", $1); $$ = newID($1); }
+    | ID            { $$ = newID($1); }
     ;
 
 math_expr: expr PLUS expr       { $$ = newNode(MATH_OP_NODE, (NodeValue)Sum, $1, $3); }
@@ -97,7 +108,7 @@ bool_expr: expr LS expr         { $$ = newNode(BOOL_OP_NODE, (NodeValue)Ls, $1, 
          | expr GEQ expr        { $$ = newNode(BOOL_OP_NODE, (NodeValue)Geq, $1, $3); }
          | expr EQ expr         { $$ = newNode(BOOL_OP_NODE, (NodeValue)Eq, $1, $3); }
          | expr NEQ expr        { $$ = newNode(BOOL_OP_NODE, (NodeValue)Neq, $1, $3); }
-         | NOT expr             { $$ = newNode(BOOL_OP_NODE, (NodeValue)Not, $2, NULL); }
+         | NOT expr             { $$ = newNode(BOOL_OP_NODE, (NodeValue)Not, NULL, $2); }
          | TRUE                 { $$ = newNode(BOOL_NODE, (NodeValue)$1, NULL, NULL); }
          | FALSE                { $$ = newNode(BOOL_NODE, (NodeValue)$1, NULL, NULL); }
          ;
@@ -108,9 +119,8 @@ cond: IF expr THEN expr ELSE expr    { $$ = newConditional($2, $4, $6); }
 
 %%
 
-void yyerror(const char* s) {
+void yyerror(Program* program, const char* s) {
     fprintf(stderr, "Parse error: %s\n", s);
-    exit(1);
 }
 
 int yywrap() {
