@@ -152,7 +152,7 @@ char *visitExpressionNode(size_t *temp_c, char **result, Bucket *scope, Node *no
             fprintf(stderr, "Error variable not declared: %s\n", node->value.id);
             exit(1);
         }
-        return node->value.id;
+        return strdup(node->value.id);
     }
 
     ThreeAddressCode *code = expressionNodeTo3AC(temp_c, node, temp_l, temp_r);
@@ -191,7 +191,8 @@ ThreeAddressCode *expressionNodeTo3AC(size_t *temp_c, Node *node, char *temp_l, 
         }
         case BOOL_NODE:
             code->operation = NULL;
-            code->arg_1 = strdup(node->value.boolean ? "true" : "false");
+            // NOTE: this is done because in the c file we don't keep track of the variable type
+            code->arg_1 = strdup(node->value.boolean ? "1" : "0");
             code->arg_2 = NULL;
             code->result = nextTempVar(temp_c);
             break;

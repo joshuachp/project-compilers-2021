@@ -26,7 +26,7 @@ Node *newConditional(Node *condition, Node *left, Node *right) {
 Node *newAssignment(char *id, Node *expr) {
     Node *node = malloc(sizeof(Node));
     node->type = ASSIGN_NODE;
-    node->value.id = id;
+    node->value.id = strdup(id);
     node->right = expr;
     node->left = NULL;
     node->condition = NULL;
@@ -36,11 +36,24 @@ Node *newAssignment(char *id, Node *expr) {
 Node *newID(char *id) {
     Node *node = malloc(sizeof(Node));
     node->type = ID_NODE;
-    node->value.id = id;
+    node->value.id = strdup(id);
     node->left = NULL;
     node->right = NULL;
     node->condition = NULL;
     return node;
+}
+
+void freeTree(Node *node) {
+    if (node == NULL) {
+        return;
+    }
+    freeTree(node->left);
+    freeTree(node->right);
+    freeTree(node->condition);
+    if (node->type == ID_NODE) {
+        free(node->value.id);
+    }
+    free(node);
 }
 
 void printNode(Node *node) {
@@ -119,6 +132,14 @@ Program *newProgram() {
     program->capacity = PROGRAM_DEFAULT_CAPACITY;
     program->length = 0;
     return program;
+}
+
+void freeProgram(Program *program) {
+    for (size_t i = 0; i < program->length; i++) {
+        freeTree(program->lines[i]);
+    }
+    free(program->lines);
+    free(program);
 }
 
 void pushLineProgram(Program *program, Node *line) {

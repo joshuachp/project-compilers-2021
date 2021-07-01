@@ -59,6 +59,8 @@ typedef struct Program {
 
 Node *newNode(NodeType type, NodeValue value, Node *left, Node *right);
 
+void freeTree(Node *node);
+
 Node *newConditional(Node *condition, Node *left, Node *right);
 
 Node *newAssignment(char *id, Node *expr);
@@ -70,6 +72,7 @@ void printTree(Node *node);
 void printNode(Node *node);
 
 Program *newProgram();
+void freeProgram(Program *program);
 
 void pushLineProgram(Program *program, Node *line);
 

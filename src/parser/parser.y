@@ -87,12 +87,12 @@ line: var NL    { $$ = $1; }
     | cond NL   { $$ = $1; }
     ;
 
-var: ID ASSIGN expr { $$ = newAssignment($1, $3); }
+var: ID ASSIGN expr { $$ = newAssignment($1, $3); free($1); }
 
 expr: math_expr     { $$ = $1; }
     | bool_expr     { $$ = $1; }
     | L_B expr R_B  { $$ = $2; }
-    | ID            { $$ = newID($1); }
+    | ID            { $$ = newID($1); free($1); }
     ;
 
 math_expr: expr PLUS expr       { $$ = newNode(MATH_OP_NODE, (NodeValue)Sum, $1, $3); }

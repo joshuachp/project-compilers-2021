@@ -9,17 +9,42 @@
 
 extern FILE *yyin;
 
-int main(void) {
+void compiler(Program *program) {}
 
-    yyin = fopen("prog.txt", "r");
+void interpreter(Program *program) {}
 
-    // TODO: free
-    Program *program = newProgram();
-    int res = yyparse(program);
-    if (res != 0) {
-        return res;
+int main(int argc, char **argv) {
+
+    if (argc > 2) {
+        fprintf(stderr, "To many parameters parameters\n");
+        return 1;
     }
-    char *prog = compileProgram(program);
-    puts(prog);
+
+    if (argc == 2) {
+        yyin = fopen(argv[1], "r");
+
+        if (yyin == NULL) {
+            perror("Error reading input file");
+            return 1;
+        }
+
+        Program *program = newProgram();
+        int res = yyparse(program);
+        if (res != 0) {
+            return res;
+        }
+        fclose(yyin);
+
+        char *prog = compileProgram(program);
+        puts(prog);
+
+        freeProgram(program);
+        free(prog);
+
+        return 0;
+    } else {
+        // TODO interpreter
+    }
+
     return 0;
 }
