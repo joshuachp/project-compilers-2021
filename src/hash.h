@@ -16,16 +16,22 @@ typedef struct Bucket {
     Item *tail;
 } Bucket;
 
-Bucket *newBucket();
+typedef struct HashMap {
+    size_t length;
+    size_t capacity;
+    Bucket **buckets;
+} HashMap;
 
-void freeBucket(Bucket *bucket);
+Bucket *new_bucket();
 
-void freeItem(Item *item);
+void free_bucket(Bucket *bucket);
 
-Item *newItem(char *key, int32_t value, Item *next);
+void free_item(Item *item);
 
-Item *setItem(char *key, int32_t value, Bucket *bucket);
+Item *new_item(char *key, int32_t value, Item *next);
 
-Item *getItem(char *key, Bucket *bucket);
+Item *set_item(char *key, int32_t value, Bucket *bucket);
+
+Item *get_item(char *key, Bucket *bucket);
 
 #endif // HASH_TABLE

@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-Node *visitNode(Bucket *scope, Node *node) {
+Node *visit_node(Bucket *scope, Node *node) {
     if (node == NULL) {
         return NULL;
     }
@@ -18,54 +18,55 @@ Node *visitNode(Bucket *scope, Node *node) {
             memcpy(res, node, sizeof(Node));
             return res;
         case MATH_OP_NODE:
-            res = visitMathOpNode(scope, node);
+            res = visit_math_node(scope, node);
             return res;
         case BOOL_OP_NODE:
-            res = visitBoolOpNode(scope, node);
+            res = visit_bool_node(scope, node);
             return res;
         case COND_NODE: {
-            Node *condition = visitNode(scope, node->condition);
+            Node *condition = visit_node(scope, node->condition);
             // Return if error happened downstream
             if (condition == NULL) {
                 return NULL;
             }
             if (condition->value.value) {
-                res = visitNode(scope, node->left);
+                res = visit_node(scope, node->left);
             } else {
-                res = visitNode(scope, node->right);
+                res = visit_node(scope, node->right);
             }
-            freeTree(condition);
+            free_tree(condition);
             condition = NULL;
             return res;
         }
         case ASSIGN_NODE: {
-            res = visitNode(scope, node->right);
-            setItem(node->value.id, res->value.value, scope);
-            freeTree(res);
+            res = visit_node(scope, node->right);
+            set_item(node->value.id, res->value.value, scope);
+            free_tree(res);
             res = NULL;
             return NULL;
         }
         case ID_NODE: {
-            Item *item = getItem(node->value.id, scope);
+            Item *item = get_item(node->value.id, scope);
             if (item == NULL) {
-                fprintf(stderr, "Error value not defined: %s\n", node->value.id);
+                fprintf(stderr, "Error value not defined: %s\n",
+                        node->value.id);
                 return NULL;
             }
-            res = newNode(INT_NODE, (NodeValue)item->value, NULL, NULL);
+            res = new_node(INT_NODE, (NodeValue)item->value, NULL, NULL);
             return res;
         }
     }
 }
 
-Node *visitMathOpNode(Bucket *scope, Node *node) {
-    Node *left = visitNode(scope, node->left);
-    Node *right = visitNode(scope, node->right);
-    Node *res = newNode(INT_NODE, (NodeValue)0, NULL, NULL);
+Node *visit_math_node(Bucket *scope, Node *node) {
+    Node *left = visit_node(scope, node->left);
+    Node *right = visit_node(scope, node->right);
+    Node *res = new_node(INT_NODE, (NodeValue)0, NULL, NULL);
 
     // Return NULL if erro happened downstream
     if (left == NULL || right == NULL) {
-        freeTree(left);
-        freeTree(right);
+        free_tree(left);
+        free_tree(right);
         left = NULL;
         right = NULL;
         return NULL;
@@ -86,22 +87,22 @@ Node *visitMathOpNode(Bucket *scope, Node *node) {
             break;
     }
     // Free
-    freeTree(left);
-    freeTree(right);
+    free_tree(left);
+    free_tree(right);
     left = NULL;
     right = NULL;
     return res;
 }
 
-Node *visitBoolOpNode(Bucket *scope, Node *node) {
-    Node *res = newNode(BOOL_NODE, (NodeValue) false, NULL, NULL);
-    Node *left = visitNode(scope, node->left);
-    Node *right = visitNode(scope, node->right);
+Node *visit_bool_node(Bucket *scope, Node *node) {
+    Node *res = new_node(BOOL_NODE, (NodeValue) false, NULL, NULL);
+    Node *left = visit_node(scope, node->left);
+    Node *right = visit_node(scope, node->right);
 
     // Return NULL if erro happened downstream
     if (right == NULL || (node->value.bool_op != Not && left == NULL)) {
-        freeTree(left);
-        freeTree(right);
+        free_tree(left);
+        free_tree(right);
         left = NULL;
         right = NULL;
         return NULL;
@@ -131,8 +132,8 @@ Node *visitBoolOpNode(Bucket *scope, Node *node) {
             break;
     }
     // Free
-    freeTree(left);
-    freeTree(right);
+    free_tree(left);
+    free_tree(right);
     left = NULL;
     right = NULL;
     return res;

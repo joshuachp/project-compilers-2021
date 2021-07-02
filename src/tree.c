@@ -4,7 +4,7 @@
 
 #include "tree.h"
 
-Node *newNode(NodeType type, NodeValue value, Node *left, Node *right) {
+Node *new_node(NodeType type, NodeValue value, Node *left, Node *right) {
     Node *node = malloc(sizeof(Node));
     node->type = type;
     node->value = value;
@@ -14,7 +14,7 @@ Node *newNode(NodeType type, NodeValue value, Node *left, Node *right) {
     return node;
 }
 
-Node *newConditional(Node *condition, Node *left, Node *right) {
+Node *new_conditional(Node *condition, Node *left, Node *right) {
     Node *node = malloc(sizeof(Node));
     node->type = COND_NODE;
     node->left = left;
@@ -23,7 +23,7 @@ Node *newConditional(Node *condition, Node *left, Node *right) {
     return node;
 }
 
-Node *newAssignment(char *id, Node *expr) {
+Node *new_assignment(char *id, Node *expr) {
     Node *node = malloc(sizeof(Node));
     node->type = ASSIGN_NODE;
     node->value.id = strdup(id);
@@ -33,7 +33,7 @@ Node *newAssignment(char *id, Node *expr) {
     return node;
 }
 
-Node *newID(char *id) {
+Node *new_id(char *id) {
     Node *node = malloc(sizeof(Node));
     node->type = ID_NODE;
     node->value.id = strdup(id);
@@ -43,20 +43,20 @@ Node *newID(char *id) {
     return node;
 }
 
-void freeTree(Node *node) {
+void free_tree(Node *node) {
     if (node == NULL) {
         return;
     }
-    freeTree(node->left);
-    freeTree(node->right);
-    freeTree(node->condition);
+    free_tree(node->left);
+    free_tree(node->right);
+    free_tree(node->condition);
     if (node->type == ID_NODE) {
         free(node->value.id);
     }
     free(node);
 }
 
-void printNode(Node *node) {
+void print_node(Node *node) {
     if (node == NULL) {
         fprintf(stderr, "Error printing node: NULL node\n");
         exit(1);
@@ -109,7 +109,7 @@ void printNode(Node *node) {
         }
     } else if (node->type == COND_NODE) {
         printf(" if");
-        printTree(node->condition);
+        print_tree(node->condition);
         printf(" else");
     } else if (node->type == ASSIGN_NODE) {
         printf("%s =", node->value.id);
@@ -118,15 +118,15 @@ void printNode(Node *node) {
     }
 }
 
-void printTree(Node *node) {
+void print_tree(Node *node) {
     if (node == NULL)
         return;
-    printTree(node->left);
-    printNode(node);
-    printTree(node->right);
+    print_tree(node->left);
+    print_node(node);
+    print_tree(node->right);
 }
 
-Program *newProgram() {
+Program *new_program() {
     Program *program = malloc(sizeof(Program));
     program->lines = calloc(PROGRAM_DEFAULT_CAPACITY, sizeof(Node));
     program->capacity = PROGRAM_DEFAULT_CAPACITY;
@@ -134,23 +134,27 @@ Program *newProgram() {
     return program;
 }
 
-void freeProgram(Program *program) {
+void free_program(Program *program) {
     for (size_t i = 0; i < program->length; i++) {
-        freeTree(program->lines[i]);
+        free_tree(program->lines[i]);
     }
     free(program->lines);
     free(program);
 }
 
-void pushLineProgram(Program *program, Node *line) {
+void push_line_program(Program *program, Node *line) {
+    // Check if the array has enough capacity
     if (program->length + 1 > program->capacity) {
-        program->lines = realloc(program->lines, program->capacity * 2 * sizeof(Node));
+        // Reallocate with double the capacity
+        program->lines =
+            realloc(program->lines, 2 * program->capacity * sizeof(Node));
     }
+    // Append the line and increase the length of the array
     program->lines[program->length] = line;
     program->length += 1;
 }
 
-char *nodeOperationToString(Node *node) {
+char *node_operation_to_string(Node *node) {
     char *op;
     if (node->type == MATH_OP_NODE) {
         switch (node->value.math_op) {
@@ -191,7 +195,7 @@ char *nodeOperationToString(Node *node) {
                 op = strdup("!");
                 break;
         }
-   } else {
+    } else {
         op = NULL;
     }
     return op;
