@@ -38,7 +38,7 @@ NL [\n\r]
 
 %%
 
-{NUMBER} { yylval.integer = atoi(yytext); return NUMBER; }
+{NUMBER} { yylval.value = atoi(yytext); return NUMBER; }
 
 {PLUS} { return PLUS; }
 {MIN}  { return MIN; }
@@ -53,8 +53,8 @@ NL [\n\r]
 {NEQ} { return NEQ; }
 {NOT} { return NOT; }
 
-{TRUE}  { yylval.boolean = true; return TRUE; }
-{FALSE} { yylval.boolean = false; return FALSE; }
+{TRUE}  { yylval.value = true; return TRUE; }
+{FALSE} { yylval.value = false; return FALSE; }
 
 {L_B} { return L_B; }
 {R_B} { return R_B; }

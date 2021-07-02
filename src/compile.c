@@ -182,17 +182,16 @@ ThreeAddressCode *expressionNodeTo3AC(size_t *temp_c, Node *node, char *temp_l, 
     switch (node->type) {
         case INT_NODE: {
             code->operation = NULL;
-            buff_size = snprintf(NULL, 0, "%d", node->value.integer) + 1;
+            buff_size = snprintf(NULL, 0, "%d", node->value.value) + 1;
             code->arg_1 = malloc(buff_size);
-            snprintf(code->arg_1, buff_size, "%d", node->value.integer);
+            snprintf(code->arg_1, buff_size, "%d", node->value.value);
             code->arg_2 = NULL;
             code->result = nextTempVar(temp_c);
             break;
         }
         case BOOL_NODE:
             code->operation = NULL;
-            // NOTE: this is done because in the c file we don't keep track of the variable type
-            code->arg_1 = strdup(node->value.boolean ? "1" : "0");
+            code->arg_1 = strdup(node->value.value ? "1" : "0");
             code->arg_2 = NULL;
             code->result = nextTempVar(temp_c);
             break;

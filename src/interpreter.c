@@ -24,27 +24,23 @@ Node *visitNode(Bucket *scope, Node *node) {
             res = visitBoolOpNode(scope, node);
             return res;
         case COND_NODE: {
-            Node *condition = visitBoolOpNode(scope, node->condition);
+            Node *condition = visitNode(scope, node->condition);
             // Return if error happened downstream
             if (condition == NULL) {
                 return NULL;
             }
-            if (condition->value.boolean) {
+            if (condition->value.value) {
                 res = visitNode(scope, node->left);
-                printNode(res);
             } else {
                 res = visitNode(scope, node->right);
-                printNode(res);
             }
             freeTree(condition);
             condition = NULL;
-            freeTree(res);
-            res = NULL;
-            return NULL;
+            return res;
         }
         case ASSIGN_NODE: {
             res = visitNode(scope, node->right);
-            setItem(node->value.id, res->value.integer, scope);
+            setItem(node->value.id, res->value.value, scope);
             freeTree(res);
             res = NULL;
             return NULL;
@@ -77,16 +73,16 @@ Node *visitMathOpNode(Bucket *scope, Node *node) {
 
     switch (node->value.math_op) {
         case Sum:
-            res->value.integer = left->value.integer + right->value.integer;
+            res->value.value = left->value.value + right->value.value;
             break;
         case Dif:
-            res->value.integer = left->value.integer - right->value.integer;
+            res->value.value = left->value.value - right->value.value;
             break;
         case Mul:
-            res->value.integer = left->value.integer * right->value.integer;
+            res->value.value = left->value.value * right->value.value;
             break;
         case Div:
-            res->value.integer = left->value.integer / right->value.integer;
+            res->value.value = left->value.value / right->value.value;
             break;
     }
     // Free
@@ -103,7 +99,7 @@ Node *visitBoolOpNode(Bucket *scope, Node *node) {
     Node *right = visitNode(scope, node->right);
 
     // Return NULL if erro happened downstream
-    if (right == NULL || (node->type != Not && left == NULL)) {
+    if (right == NULL || (node->value.bool_op != Not && left == NULL)) {
         freeTree(left);
         freeTree(right);
         left = NULL;
@@ -113,25 +109,25 @@ Node *visitBoolOpNode(Bucket *scope, Node *node) {
 
     switch (node->value.bool_op) {
         case Ls:
-            res->value.boolean = left->value.boolean < right->value.boolean;
+            res->value.value = left->value.value < right->value.value;
             break;
         case Gr:
-            res->value.boolean = left->value.boolean > right->value.boolean;
+            res->value.value = left->value.value > right->value.value;
             break;
         case Leq:
-            res->value.boolean = left->value.boolean <= right->value.boolean;
+            res->value.value = left->value.value <= right->value.value;
             break;
         case Geq:
-            res->value.boolean = left->value.boolean >= right->value.boolean;
+            res->value.value = left->value.value >= right->value.value;
             break;
         case Eq:
-            res->value.boolean = left->value.boolean == right->value.boolean;
+            res->value.value = left->value.value == right->value.value;
             break;
         case Neq:
-            res->value.boolean = left->value.boolean != right->value.boolean;
+            res->value.value = left->value.value != right->value.value;
             break;
         case Not:
-            res->value.boolean = !right->value.boolean;
+            res->value.value = !right->value.value;
             break;
     }
     // Free

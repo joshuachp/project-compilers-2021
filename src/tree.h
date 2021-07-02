@@ -35,8 +35,7 @@ typedef enum BoolOperator {
 
 typedef union {
     char *id;
-    int32_t integer;
-    bool boolean;
+    int32_t value;
     MathOperator math_op;
     BoolOperator bool_op;
 } NodeValue;

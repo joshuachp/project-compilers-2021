@@ -26,8 +26,7 @@
 
 %union {
     char* id;
-    int32_t integer;
-    bool boolean;
+    int32_t value;
     struct Node *node;
 }
 
@@ -63,8 +62,7 @@
 %token ASSIGN
 
 %type<id> ID
-%type<integer> NUMBER
-%type<boolean> TRUE FALSE
+%type<value> NUMBER TRUE FALSE
 
 %type<node> line math_expr expr cond bool_expr var
 

@@ -61,9 +61,9 @@ void printNode(Node *node) {
         fprintf(stderr, "Error printing node: NULL node\n");
         exit(1);
     } else if (node->type == INT_NODE) {
-        printf(" %d", node->value.integer);
+        printf(" %d", node->value.value);
     } else if (node->type == BOOL_NODE) {
-        if (node->value.boolean) {
+        if (node->value.value) {
             printf(" True");
         } else {
             printf(" False");
@@ -191,7 +191,7 @@ char *nodeOperationToString(Node *node) {
                 op = strdup("!");
                 break;
         }
-    } else {
+   } else {
         op = NULL;
     }
     return op;
