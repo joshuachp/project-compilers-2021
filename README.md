@@ -24,3 +24,7 @@ make
 cmake -S . --B build
 cmake --build build
 ```
+
+## Running
+
+See the `--help` to see running options.
