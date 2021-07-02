@@ -33,6 +33,7 @@ add_executable(calc
     src/tree.c
     src/hash.c
     src/compile.c
+    src/interpreter.c
     ${BISON_Parser_OUTPUTS}
     ${FLEX_Lexer_OUTPUTS}
 )

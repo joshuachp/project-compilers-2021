@@ -7,6 +7,7 @@ Infix calculator and compiler to c.
 The project requires:
 
 - `flex` and `bison` for the parser
+- `readline` to use the interpreter
 - `CMake` as build tool
 - **optionally** `ninja` and `gnu-make` also for building
 

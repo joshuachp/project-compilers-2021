@@ -1,5 +1,6 @@
 #include "compile.h"
 #include "hash.h"
+#include "interpreter.h"
 #include "tree.h"
 #include <stdbool.h>
 #include <stddef.h>
@@ -68,10 +69,13 @@ int main(int argc, char **argv) {
                 buffer = NULL;
 
                 for (size_t i = 0; i < program->length; i++) {
-                    printTree(program->lines[i]);
-                    puts("");
+                    Node *node = visitNode(scope, program->lines[i]);
+                    if (node != NULL) {
+                        printNode(node);
+                        puts("");
+                        freeTree(node);
+                    }
                 }
-
                 // Free
                 freeProgram(program);
                 program = NULL;
