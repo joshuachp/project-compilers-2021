@@ -21,7 +21,7 @@ endif ()
 find_package(BISON)
 find_package(FLEX)
 
-BISON_TARGET(Parser src/parser/parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.c
+BISON_TARGET(Parser src/parser/parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.c 
     DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/parser.h)
 FLEX_TARGET(Lexer src/parser/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.c)
 ADD_FLEX_BISON_DEPENDENCY(Lexer Parser)
@@ -36,5 +36,6 @@ add_executable(calc
     ${BISON_Parser_OUTPUTS}
     ${FLEX_Lexer_OUTPUTS}
 )
-target_link_libraries(calc ${FLEX_LIBRARIES})
+target_link_libraries(calc ${FLEX_LIBRARIES} readline)
+
 

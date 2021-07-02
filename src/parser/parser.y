@@ -77,14 +77,15 @@
 %%
 
 lines: lines line { pushLineProgram(program, $2); }
-     | lines NL
-     | NL
      | %empty
      ;
 
 line: var NL    { $$ = $1; }
+    | var       { $$ = $1; }
     | expr NL   { $$ = $1; }
+    | expr      { $$ = $1; }
     | cond NL   { $$ = $1; }
+    | cond      { $$ = $1; }
     ;
 
 var: ID ASSIGN expr { $$ = newAssignment($1, $3); free($1); }
