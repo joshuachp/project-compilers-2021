@@ -68,7 +68,7 @@ char *compile_line(size_t *temp_c, Node *line, Bucket *scope) {
 }
 
 char *compile_assignment(size_t *temp_c, Node *node, Bucket *scope) {
-    Item *var = get_item(node->value.id, scope);
+    Item *var = bucket_get(node->value.id, scope);
     char *result = NULL;
     if (var == NULL) {
         // Declare variable
@@ -86,7 +86,7 @@ char *compile_assignment(size_t *temp_c, Node *node, Bucket *scope) {
     snprintf(assignment, buff_size, "%s = %s;\n", node->value.id, temp_res);
     append_to_string(&result, assignment);
     // Set variable in scope (real value doesn't matter)
-    set_item(node->value.id, 0, scope);
+    bucket_set(node->value.id, 0, scope);
     // Free temp_res
     free(temp_res);
     free(assignment);
@@ -148,7 +148,7 @@ char *visit_expression_node(size_t *temp_c, char **result, Bucket *scope, Node *
 
     // Check if variable initialized
     if (node->type == ID_NODE) {
-        if (get_item(node->value.id, scope) == NULL) {
+        if (bucket_get(node->value.id, scope) == NULL) {
             fprintf(stderr, "Error variable not declared: %s\n", node->value.id);
             exit(1);
         }

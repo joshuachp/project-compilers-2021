@@ -40,13 +40,13 @@ Node *visit_node(Bucket *scope, Node *node) {
         }
         case ASSIGN_NODE: {
             res = visit_node(scope, node->right);
-            set_item(node->value.id, res->value.value, scope);
+            bucket_set(node->value.id, res->value.value, scope);
             free_tree(res);
             res = NULL;
             return NULL;
         }
         case ID_NODE: {
-            Item *item = get_item(node->value.id, scope);
+            Item *item = bucket_get(node->value.id, scope);
             if (item == NULL) {
                 fprintf(stderr, "Error value not defined: %s\n",
                         node->value.id);
