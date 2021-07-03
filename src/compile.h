@@ -15,17 +15,19 @@ typedef struct ThreeAddressCode {
 
 char *compile_program(Program *program);
 
-char *compile_line(size_t *temp_c, Node *line, Bucket *scope);
+char *compile_line(HashMap *scope, size_t *temp_c, Node *line);
 
-char *compile_assignment(size_t *temp_c, Node *node, Bucket *scope);
+char *compile_assignment(HashMap *scope, size_t *temp_c, Node *node);
 
-char *compile_expression(size_t *temp_c, Node *node, Bucket *scope);
+char *compile_expression(HashMap *scope, size_t *temp_c, Node *node);
 
-char *compile_conditional(size_t *temp_c, Node *node, Bucket *scope);
+char *compile_conditional(HashMap *scope, size_t *temp_c, Node *node);
 
-char *visit_expression_node(size_t *temp_c, char **result, Bucket *scope, Node *node);
+char *compile_expression_node(HashMap *scope, size_t *temp_c, char **result,
+                            Node *node);
 
-ThreeAddressCode *expression_node_to_3_ac(size_t *temp_c, Node *node, char *t_left, char *t_right);
+ThreeAddressCode *expression_node_to_3_ac(size_t *temp_c, Node *node,
+                                          char *t_left, char *t_right);
 
 void free_3_ac(ThreeAddressCode *code);
 

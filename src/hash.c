@@ -12,6 +12,8 @@ Bucket *new_bucket() {
 }
 
 void free_bucket(Bucket *bucket) {
+    if (bucket == NULL)
+        return;
     Item *item = bucket->head;
     Item *next;
     while (item != NULL) {
@@ -24,6 +26,8 @@ void free_bucket(Bucket *bucket) {
 }
 
 void free_item(Item *item) {
+    if (item == NULL)
+        return;
     free(item->key);
     free(item);
 }
@@ -37,24 +41,31 @@ Item *new_item(char *key, int32_t value, Item *next) {
     return item;
 }
 
-Item *bucket_set(char *key, int32_t value, Bucket *bucket) {
-    Item *item = bucket_get(key, bucket);
+bool bucket_set(Bucket *bucket, char *key, int32_t value) {
+    // Check if the bucket contains the item
+    Item *item = bucket_get(bucket, key);
     if (item == NULL) {
+        // If it doesn't contain, allocate a new one
         item = new_item(key, value, NULL);
+        // Check if bucket is empty and set new item as head and tail
         if (bucket->head == NULL && bucket->tail == NULL) {
             bucket->head = item;
             bucket->tail = item;
         } else {
+            // Append the item to the bucket
             bucket->tail->next = item;
             bucket->tail = item;
         }
+        // Return new item appended
+        return true;
     } else {
+        // Update the item value
         item->value = value;
+        return false;
     }
-    return item;
 }
 
-Item *bucket_get(char *key, Bucket *bucket) {
+Item *bucket_get(Bucket *bucket, char *key) {
     if (bucket == NULL) {
         return NULL;
     }
@@ -69,6 +80,22 @@ Item *bucket_get(char *key, Bucket *bucket) {
         item = item->next;
     }
     return NULL;
+}
+
+bool bucket_has(Bucket *bucket, char *key) {
+    if (bucket == NULL) {
+        return false;
+    }
+    // Cycle throw the items
+    Item *item = bucket->head;
+    while (item != NULL) {
+        if (strcmp(key, item->key) == 0) {
+            // Return the copy of the items
+            return true;
+        }
+        item = item->next;
+    }
+    return false;
 }
 
 bool bucket_delete(Bucket *bucket, char *key) {
@@ -112,6 +139,8 @@ HashMap *new_hash_map() {
 }
 
 void free_hash_map(HashMap *map) {
+    if (map == NULL)
+        return;
     // Cycle to all the allocated buckets to check if we need to free them
     for (size_t i = 0; i < map->capacity; i++) {
         if (map->buckets[i] != NULL) {
@@ -171,7 +200,9 @@ void hm_set(HashMap *map, char *key, int32_t value) {
     if (map->buckets[index] == NULL) {
         map->buckets[index] = new_bucket();
     }
-    bucket_set(key, value, map->buckets[index]);
+    if (bucket_set(map->buckets[index], key, value)) {
+        map->length += 1;
+    }
 }
 
 Item *hm_get(HashMap *map, char *key) {
@@ -181,7 +212,7 @@ Item *hm_get(HashMap *map, char *key) {
         return NULL;
     }
     // Get the item copy or NULL
-    return bucket_get(key, map->buckets[index]);
+    return bucket_get(map->buckets[index], key);
 }
 
 bool hm_has(HashMap *map, char *key) {
@@ -190,7 +221,7 @@ bool hm_has(HashMap *map, char *key) {
     if (map->buckets[index] == NULL) {
         return false;
     }
-    return bucket_get(key, map->buckets[index]) != NULL;
+    return bucket_has(map->buckets[index], key);
 }
 
 bool hm_delete(HashMap *map, char *key) {
@@ -199,5 +230,9 @@ bool hm_delete(HashMap *map, char *key) {
     if (map->buckets[index] == NULL) {
         return false;
     }
-    return bucket_delete(map->buckets[index], key);
+    if (bucket_delete(map->buckets[index], key)) {
+        map->length -= 1;
+        return true;
+    }
+    return false;
 }

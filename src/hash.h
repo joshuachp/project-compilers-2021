@@ -34,9 +34,26 @@ void free_item(Item *item);
 
 Item *new_item(char *key, int32_t value, Item *next);
 
-Item *bucket_set(char *key, int32_t value, Bucket *bucket);
+/**
+ * @brief Append or updates and item in the bucket
+ *
+ * @param bucket
+ * @param key Item key
+ * @param value Item value
+ * @return True if it's a new item, false if updated
+ */
+bool bucket_set(Bucket *bucket, char *key, int32_t value);
 
-Item *bucket_get(char *key, Bucket *bucket);
+Item *bucket_get(Bucket *bucket, char *key);
+
+/**
+ * @brief Check if the Bucket contains a item
+ *
+ * @param map
+ * @param key Item key
+ * @return True if is contained, false otherwise
+ */
+bool bucket_has(Bucket *bucket, char *key);
 
 /**
  * @brief Delete an item from the bucket

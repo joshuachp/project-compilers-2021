@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-Node *visit_node(Bucket *scope, Node *node) {
+Node *visit_node(HashMap *scope, Node *node) {
     if (node == NULL) {
         return NULL;
     }
@@ -40,25 +40,27 @@ Node *visit_node(Bucket *scope, Node *node) {
         }
         case ASSIGN_NODE: {
             res = visit_node(scope, node->right);
-            bucket_set(node->value.id, res->value.value, scope);
+            hm_set(scope, node->value.id, res->value.value);
             free_tree(res);
             res = NULL;
             return NULL;
         }
         case ID_NODE: {
-            Item *item = bucket_get(node->value.id, scope);
+            Item *item = hm_get(scope, node->value.id);
             if (item == NULL) {
                 fprintf(stderr, "Error value not defined: %s\n",
                         node->value.id);
                 return NULL;
             }
             res = new_node(INT_NODE, (NodeValue)item->value, NULL, NULL);
+            free_item(item);
+            item = NULL;
             return res;
         }
     }
 }
 
-Node *visit_math_node(Bucket *scope, Node *node) {
+Node *visit_math_node(HashMap *scope, Node *node) {
     Node *left = visit_node(scope, node->left);
     Node *right = visit_node(scope, node->right);
     Node *res = new_node(INT_NODE, (NodeValue)0, NULL, NULL);
@@ -94,7 +96,7 @@ Node *visit_math_node(Bucket *scope, Node *node) {
     return res;
 }
 
-Node *visit_bool_node(Bucket *scope, Node *node) {
+Node *visit_bool_node(HashMap *scope, Node *node) {
     Node *res = new_node(BOOL_NODE, (NodeValue) false, NULL, NULL);
     Node *left = visit_node(scope, node->left);
     Node *right = visit_node(scope, node->right);

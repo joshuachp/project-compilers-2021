@@ -46,7 +46,7 @@ int interpreter_shell() {
     // The parsed program
     Program *program = NULL;
     // The global scope
-    Bucket *scope = new_bucket();
+    HashMap *scope = new_hash_map();
     // Token buffer
     YY_BUFFER_STATE buffer = NULL;
     do {
@@ -86,6 +86,8 @@ int interpreter_shell() {
             program = NULL;
         }
     } while (line_read != NULL);
+    free_hash_map(scope);
+    scope = NULL;
     return 0;
 }
 
@@ -97,7 +99,7 @@ int interpreter_shell() {
 int interpret_file() {
     Program *program = new_program();
     // Global scope
-    Bucket *scope = new_bucket();
+    HashMap *scope = new_hash_map();
     // Parse the file and check for parse error
     int res = yyparse(program);
     if (res != 0) {
@@ -115,7 +117,7 @@ int interpret_file() {
         }
     }
     free_program(program);
-    free_bucket(scope);
+    free_hash_map(scope);
     program = NULL;
     scope = NULL;
     return 0;
