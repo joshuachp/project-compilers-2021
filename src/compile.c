@@ -252,7 +252,7 @@ void append_to_string(char **string, char *str) {
     if (*string == NULL) {
         *string = strdup(str);
     } else {
-        size_t size = strlen(*string) + strlen(str) + 2;
+        size_t size = strlen(*string) + strlen(str) + 1;
         *string = realloc(*string, size);
         strcat(*string, str);
     }
